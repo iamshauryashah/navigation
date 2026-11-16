@@ -25,12 +25,15 @@ Each participating website adds only:
 <script defer src="https://navigation.shauryaswebsites.com/launcher.js"></script>
 ```
 
-The landing page currently uses the CDN integration until the Cloudflare-hosted endpoint is verified.
+The landing page loads the Cloudflare-hosted script directly.
 
 ## Shared behavior
 
 - Launcher positioned at top-right of every site
-- Dark navy styling consistent with the landing page
+- Theme-adaptive frosted glass: dark/light presets with app-specific accents
+- Automatically configured themes for Landing Page, Gerry, Midterm-UJ, Road to 270, Soccer Sim, Soccer Manager, Army Game, and QED; unknown pages receive a light/dark fallback
+- Optional per-site attributes: `data-nav-theme="light"` or `data-nav-theme="dark"`, plus `data-nav-accent="#rrggbb"` on the loader script
+- Home tile has no persistent highlight; borders emphasize hover and keyboard focus only
 - App icons and labels match the landing page; the hub uses the ✨ sparkle
 - Main hub is always listed first, with a small Home label
 - Every destination opens in a separate tab
