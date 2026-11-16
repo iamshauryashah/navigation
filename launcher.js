@@ -5,7 +5,7 @@
 
   // Shared catalog: edit only here to update every participating website.
   const apps = [
-    { name: "Shaurya's Websites", icon: "🏠", url: "https://www.shauryaswebsites.com/" },
+    { name: "Shaurya's Websites", icon: "✨", url: "https://www.shauryaswebsites.com/" },
     { name: "Midterm-UJ", icon: "🎓", url: "https://midterm-uj.shauryaswebsite.com/" },
     { name: "Gerry the Salamander", icon: "🦎", url: "https://gerry.shauryaswebsite.com/" },
     { name: "Race to Whitehouse", icon: "🏁", url: "https://race.shauryaswebsite.com/" },
@@ -38,6 +38,9 @@
         .grid { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px; }
         .app { min-width:0;min-height:112px;padding:13px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-align:center;text-decoration:none;border:1px solid #2b344d;border-radius:13px;background:#171f33;color:#f0f2fa;transition:background .15s,border-color .15s; }
         .app:hover { background:#252e47;border-color:#8e7bc4; }
+        .app:first-child { border-color:#8e7bc4; background:linear-gradient(145deg,#30204f,#171f33 75%); }
+        .app:first-child .emoji { background:#352650; }
+        .home-tag { display:inline-block;padding:2px 9px;border-radius:999px;background:#c4b5fd;color:#17122c;font-size:11px;font-weight:650;line-height:1.3; }
         .app.current { border-color:#a78bfa; }
         .emoji { display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:#252e47;font-size:27px; }
         .name { font-size:12px;font-weight:650;line-height:1.3;overflow-wrap:anywhere; }
@@ -72,6 +75,12 @@
       name.className = "name";
       name.textContent = app.name;
       a.append(emoji, name);
+      if (app === apps[0]) {
+        const homeTag = document.createElement("span");
+        homeTag.className = "home-tag";
+        homeTag.textContent = "Home";
+        a.append(homeTag);
+      }
       nav.append(a);
     }
     const setOpen = (open) => {
