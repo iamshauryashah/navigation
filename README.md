@@ -1,32 +1,41 @@
-# Shaurya's Websites — Shared Navigation
+# Shaurya's Websites — Navigation
 
-Central source of truth for the app launcher used across Shaurya's Websites.
+One shared app launcher for the entire Shaurya's Websites platform.
+
+## Cloudflare Worker
+
+Cloudflare auto-deploys this repository using `npx wrangler deploy`.
+
+- `wrangler.jsonc` — Worker and asset configuration
+- `worker.js` — serves the asset with short-lived/no-store response headers
+- `public/launcher.js` — **only canonical copy** of the launcher, including catalog, CSS, and behavior
+
+Assign the Worker the custom domain `navigation.shauryaswebsites.com` in Cloudflare Workers & Pages → navigation → Settings → Domains & Routes.
+
+After a successful deployment and domain setup, verify:
+`https://navigation.shauryaswebsites.com/launcher.js`
+
+It should return JavaScript with `Content-Type: text/javascript` and `Cache-Control: no-store, max-age=0`.
 
 ## Integration
 
-Include the single shared script just before the closing body tag:
+Each participating website adds only:
 
 ```html
-<script defer src="https://cdn.jsdelivr.net/gh/iamshauryashah/navigation@main/launcher.js"></script>
+<script defer src="https://navigation.shauryaswebsites.com/launcher.js"></script>
 ```
 
-The landing page is the first consumer. Other sites should use the **same loader**, without copying the app catalog, styles, or behavior into their codebases.
+The landing page currently uses the CDN integration until the Cloudflare-hosted endpoint is verified.
 
-## Behavior
+## Shared behavior
 
-- Fixed 3×3-dots launcher button in the top-right
-- Minimal dark popover; no "opens in a new tab" instructional text
-- Uses the landing page's app names, emoji icons, and destinations
-- Shaurya's Websites remains the first item
-- Every app opens in a new tab
-- Closes on Escape or an outside click
-- Shadow DOM isolates styles from each host website
-- Duplicate loads are ignored
+- Launcher positioned at top-right of every site
+- Dark navy styling consistent with the landing page
+- App icons and labels match the landing page; the hub uses the ✨ sparkle
+- Main hub is always listed first, with a small Home label
+- Every destination opens in a separate tab
+- Keyboard Escape and outside-click dismissal
+- Shadow DOM isolates component styling from each site's CSS
+- Repeated loads are ignored
 
-## Updating the app catalog
-
-Edit the `apps` array in `launcher.js` only. This controls every website using the shared script.
-
-## Hosting note
-
-The initial consumer uses jsDelivr to serve the shared GitHub file, avoiding a separate Cloudflare deployment prerequisite. CDN caches can delay updates. For tighter cache control and first-party hosting later, serve this same shared file from a dedicated Cloudflare Worker route; do not copy its implementation to consumers.
+Update the app catalog **only** in `public/launcher.js`. Never copy the UI implementation into a consumer project.
