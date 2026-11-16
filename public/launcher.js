@@ -3,6 +3,41 @@
   if (window.__shauryaLauncherLoaded) return;
   window.__shauryaLauncherLoaded = true;
 
+  // Shared appearance profiles for our public sites. One implementation, no per-app CSS.
+  // Hosts can override with data-nav-theme="light|dark" and data-nav-accent="#rrggbb".
+  const script = document.currentScript;
+  const siteThemes = {
+    "www.shauryaswebsites.com": ["dark", "#c4b5fd"],
+    "shauryaswebsites.com": ["dark", "#c4b5fd"],
+    "gerry.shauryaswebsite.com": ["light", "#0f766e"],
+    "midterm-uj.shauryaswebsite.com": ["light", "#798969"],
+    "presidentialsim.shauryaswebsites.com": ["light", "#15786e"],
+    "soccersim.shauryaswebsites.com": ["dark", "#cdf879"],
+    "soccermanager.shauryaswebsites.com": ["light", "#205a43"],
+    "army.shauryaswebsite.com": ["light", "#4a5568"],
+    "qed.shauryaswebsites.com": ["light", "#285b42"]
+  };
+  const selected = siteThemes[location.hostname] || null;
+  const overrideTheme = script?.getAttribute("data-nav-theme");
+  const overrideAccent = script?.getAttribute("data-nav-accent");
+  const validAccent = value => /^#[0-9a-fA-F]{6}$/.test(value || "");
+  function appearance() {
+    const bodyBg = getComputedStyle(document.body).backgroundColor;
+    const rootBg = getComputedStyle(document.documentElement).backgroundColor;
+    const candidates = [bodyBg, rootBg];
+    let inferred = "light";
+    for (const color of candidates) {
+      const match = /^rgba?\((\d+)[, ]+\s*(\d+)[, ]+\s*(\d+)/.exec(color);
+      if (!match) continue;
+      const brightness = (+match[1] * 299 + +match[2] * 587 + +match[3] * 114) / 1000;
+      inferred = brightness < 135 ? "dark" : "light";
+      break;
+    }
+    const mode = ["dark", "light"].includes(overrideTheme) ? overrideTheme : selected?.[0] || inferred;
+    const accent = validAccent(overrideAccent) ? overrideAccent : selected?.[1] || (mode === "dark" ? "#c4b5fd" : "#0f766e");
+    return { mode, accent };
+  }
+
   // Shared catalog: edit only here to update every participating website.
   const apps = [
     { name: "Shaurya's Websites", icon: "✨", url: "https://www.shauryaswebsites.com/" },
@@ -21,28 +56,47 @@
     if (document.getElementById("shaurya-app-launcher")) return;
     const host = document.createElement("div");
     host.id = "shaurya-app-launcher";
+    const { mode, accent } = appearance();
+    host.dataset.theme = mode;
+    host.style.setProperty("--nav-accent", accent);
     const shadow = host.attachShadow({mode: "open"});
     shadow.innerHTML = `
       <style>
-        :host { all: initial; position: fixed; top: 18px; right: 24px; z-index: 2147483000; color-scheme: dark; font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+        :host {
+          all: initial; position: fixed; top: 18px; right: 24px; z-index: 2147483000;
+          font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+          color-scheme: dark;
+          --nav-panel: rgba(17,25,46,.78); --nav-edge: rgba(196,181,253,.25);
+          --nav-text: #f0f2fa; --nav-card: rgba(23,31,51,.75);
+          --nav-card-edge: rgba(169,178,201,.18); --nav-hover: rgba(70,62,100,.7);
+          --nav-shadow: 0 18px 60px rgba(0,0,0,.48);
+          --nav-trigger: rgba(23,31,51,.84); --nav-emoji: rgba(47,57,83,.72);
+          --nav-tag-bg: rgba(196,181,253,.16);
+        }
+        :host([data-theme="light"]) {
+          color-scheme: light;
+          --nav-panel: rgba(255,255,255,.78); --nav-edge: rgba(29,36,51,.18);
+          --nav-text: #1d2433; --nav-card: rgba(250,249,245,.73);
+          --nav-card-edge: rgba(29,36,51,.14); --nav-hover: rgba(225,236,231,.92);
+          --nav-shadow: 0 18px 60px rgba(29,36,51,.2);
+          --nav-trigger: rgba(255,255,255,.84); --nav-emoji: rgba(235,239,237,.82);
+          --nav-tag-bg: rgba(15,118,110,.1);
+        }
         *, *::before, *::after { box-sizing: border-box; }
         button, a { -webkit-tap-highlight-color: transparent; }
-        .trigger { display:grid;place-items:center;width:46px;height:46px;padding:0;border:1px solid #65527e;border-radius:14px;background:#171f33;color:#c4b5fd;cursor:pointer;box-shadow:0 6px 22px #0003; }
-        .trigger:hover,.trigger[aria-expanded="true"] { background:#252e47;border-color:#c4b5fd; }
-        :is(button,a,input):focus-visible { outline:3px solid #c4b5fd;outline-offset:3px; }
+        .trigger { display:grid;place-items:center;width:46px;height:46px;padding:0;border:1px solid var(--nav-edge);border-radius:14px;background:var(--nav-trigger);color:var(--nav-accent);cursor:pointer;box-shadow:0 6px 22px #0003;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px); }
+        .trigger:hover,.trigger[aria-expanded="true"] { background:var(--nav-hover);border-color:var(--nav-accent); }
+        :is(button,a,input):focus-visible { outline:3px solid var(--nav-accent);outline-offset:3px; }
         .dots { display:grid;grid-template-columns:repeat(3,5px);gap:4px; }
         .dots i { width:5px;height:5px;border-radius:50%;background:currentColor; }
-        .panel { position:absolute;top:56px;right:0;width:min(390px,calc(100vw - 24px));max-height:min(620px,calc(100dvh - 92px));overflow:auto;padding:20px;border:1px solid #34415c;border-radius:18px;background:#11192e;box-shadow:0 18px 60px #000a; }
+        .panel { position:absolute;top:56px;right:0;width:min(390px,calc(100vw - 24px));max-height:min(620px,calc(100dvh - 92px));overflow:auto;padding:20px;border:1px solid var(--nav-edge);border-radius:18px;background:var(--nav-panel);box-shadow:var(--nav-shadow);backdrop-filter:blur(18px) saturate(135%);-webkit-backdrop-filter:blur(18px) saturate(135%); }
         .panel[hidden] { display:none; }
-        h2 { margin:0 0 16px;font-size:22px;line-height:1.2;color:#f0f2fa;font-weight:700; }
+        h2 { margin:0 0 16px;font-size:22px;line-height:1.2;color:var(--nav-text);font-weight:700; }
         .grid { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px; }
-        .app { min-width:0;min-height:112px;padding:13px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-align:center;text-decoration:none;border:1px solid #2b344d;border-radius:13px;background:#171f33;color:#f0f2fa;transition:background .15s,border-color .15s; }
-        .app:hover { background:#252e47;border-color:#8e7bc4; }
-        .app:first-child { border-color:#8e7bc4; background:linear-gradient(145deg,#30204f,#171f33 75%); }
-        .app:first-child .emoji { background:#352650; }
-        .home-tag { display:inline-block;padding:2px 9px;border-radius:999px;background:#c4b5fd;color:#17122c;font-size:11px;font-weight:650;line-height:1.3; }
-        .app.current { border-color:#a78bfa; }
-        .emoji { display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:#252e47;font-size:27px; }
+        .app { min-width:0;min-height:112px;padding:13px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-align:center;text-decoration:none;border:1px solid var(--nav-card-edge);border-radius:13px;background:var(--nav-card);color:var(--nav-text);transition:background .15s,border-color .15s; }
+         .app:hover, .app:focus-visible { background:var(--nav-hover);border-color:var(--nav-accent); }
+        .home-tag { display:inline-block;padding:2px 9px;border-radius:999px;background:var(--nav-tag-bg);color:var(--nav-text);font-size:11px;font-weight:650;line-height:1.3; }
+        .emoji { display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--nav-emoji);font-size:27px; }
         .name { font-size:12px;font-weight:650;line-height:1.3;overflow-wrap:anywhere; }
         @media (max-width: 480px) { :host { top:12px;right:12px; } .panel { padding:15px; } .app { min-height:99px; } }
         @media (prefers-reduced-motion:reduce) { .app { transition:none; } }
