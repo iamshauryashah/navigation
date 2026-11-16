@@ -15,7 +15,9 @@
     "soccersim.shauryaswebsites.com": ["dark", "#cdf879"],
     "soccermanager.shauryaswebsites.com": ["light", "#205a43"],
     "army.shauryaswebsite.com": ["light", "#4a5568"],
-    "qed.shauryaswebsites.com": ["light", "#285b42"]
+    "qed.shauryaswebsites.com": ["light", "#285b42"],
+    "feedback.shauryaswebsites.com": ["light", "#8b6ee1"],
+    "secret.shauryaswebsites.com": ["light", "#5879b5"]
   };
   const selected = siteThemes[location.hostname] || null;
   const overrideTheme = script?.getAttribute("data-nav-theme");
