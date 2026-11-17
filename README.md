@@ -42,3 +42,12 @@ The landing page loads the Cloudflare-hosted script directly.
 - Repeated loads are ignored
 
 Update the app catalog **only** in `public/launcher.js`. Never copy the UI implementation into a consumer project.
+
+
+## Smart placement (Navigation only)
+
+The shared launcher automatically scores six screen-edge positions, preferring the familiar top-right when clear. It scans visible interactive controls, headings, game canvases and the shared Feedback button, adding a clearance margin around each. Moving is allowed when the menu is closed; open menus remain anchored for stable interaction. It recomputes on page load, resize and scroll, and sizes its panel to remain within the available viewport.
+
+Positioning is a heuristic, not a guarantee that no site-specific UI can overlap. Complex canvas-only layouts and dynamically injected controls may require review. Future host applications can supply more explicit exclusion regions when warranted.
+
+Run `node --check public/launcher.js && node --test tests/placement.test.cjs` to validate syntax and collision-scoring behavior; GitHub Actions also includes this check. The feedback widget's own position has **not** been changed.
