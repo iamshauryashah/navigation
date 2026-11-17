@@ -210,12 +210,14 @@
       nav.append(a);
     }
     let chosen = null;
+    let lastHeight = null;
     let pending = false;
     const place = () => {
       if (!panel.hidden) return; // Never move the button while the user is interacting with the menu.
       const candidates = positions(window.innerWidth, window.innerHeight);
       const next = choosePlacement(candidates, visibleObstacles(host), chosen);
-      if (next.id === chosen) return;
+      if (next.id === chosen && lastHeight === window.innerHeight) return;
+      lastHeight = window.innerHeight;
       chosen = next.id;
       const edge = next.horizontal === "right" ? "right" : "left";
       host.style.top = next.top + "px";
@@ -228,9 +230,11 @@
       if (next.vertical === "bottom") {
         panel.style.top = "auto";
         panel.style.bottom = "56px";
+        panel.style.maxHeight = Math.max(140, next.top - 70) + "px";
       } else {
         panel.style.top = "56px";
         panel.style.bottom = "auto";
+        panel.style.maxHeight = Math.max(140, window.innerHeight - next.bottom - 22) + "px";
       }
     };
     const schedulePlacement = () => {
