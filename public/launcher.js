@@ -210,14 +210,15 @@
       nav.append(a);
     }
     let chosen = null;
-    let lastHeight = null;
+    let lastPosition = null;
     let pending = false;
     const place = () => {
       if (!panel.hidden) return; // Never move the button while the user is interacting with the menu.
       const candidates = positions(window.innerWidth, window.innerHeight);
       const next = choosePlacement(candidates, visibleObstacles(host), chosen);
-      if (next.id === chosen && lastHeight === window.innerHeight) return;
-      lastHeight = window.innerHeight;
+      const positionKey = [next.id,next.left,next.top,window.innerHeight].join(":");
+      if (positionKey === lastPosition) return;
+      lastPosition = positionKey;
       chosen = next.id;
       const edge = next.horizontal === "right" ? "right" : "left";
       host.style.top = next.top + "px";
