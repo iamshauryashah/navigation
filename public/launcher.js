@@ -131,6 +131,10 @@
     const { mode, accent } = appearance();
     host.dataset.theme = mode;
     host.style.setProperty("--nav-accent", accent);
+    // Custom tinted glass remains centralized; only palette tokens vary by host.
+    if (location.hostname === "gerry.shauryaswebsite.com") {
+      host.dataset.palette = "gerry";
+    }
     const shadow = host.attachShadow({mode: "open"});
     shadow.innerHTML = `
       <style>
@@ -138,21 +142,30 @@
           all: initial; position: fixed; top: 18px; right: 24px; z-index: 2147483000;
           font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
           color-scheme: dark;
-          --nav-panel: rgba(17,25,46,.78); --nav-edge: rgba(196,181,253,.25);
-          --nav-text: #f0f2fa; --nav-card: rgba(23,31,51,.75);
-          --nav-card-edge: rgba(169,178,201,.18); --nav-hover: rgba(70,62,100,.7);
+          --nav-panel: rgba(17,25,46,.48); --nav-edge: rgba(196,181,253,.35);
+          --nav-text: #f0f2fa; --nav-card: rgba(23,31,51,.36);
+          --nav-card-edge: rgba(169,178,201,.28); --nav-hover: rgba(70,62,100,.55);
           --nav-shadow: 0 18px 60px rgba(0,0,0,.48);
-          --nav-trigger: rgba(23,31,51,.84); --nav-emoji: rgba(47,57,83,.72);
+          --nav-trigger: rgba(23,31,51,.58); --nav-emoji: rgba(47,57,83,.40);
           --nav-tag-bg: rgba(196,181,253,.16);
         }
         :host([data-theme="light"]) {
           color-scheme: light;
-          --nav-panel: rgba(255,255,255,.78); --nav-edge: rgba(29,36,51,.18);
-          --nav-text: #1d2433; --nav-card: rgba(250,249,245,.73);
-          --nav-card-edge: rgba(29,36,51,.14); --nav-hover: rgba(225,236,231,.92);
+          --nav-panel: rgba(255,255,255,.38); --nav-edge: rgba(29,36,51,.24);
+          --nav-text: #1d2433; --nav-card: rgba(255,255,255,.26);
+          --nav-card-edge: rgba(29,36,51,.18); --nav-hover: rgba(225,236,231,.70);
           --nav-shadow: 0 18px 60px rgba(29,36,51,.2);
-          --nav-trigger: rgba(255,255,255,.84); --nav-emoji: rgba(235,239,237,.82);
+          --nav-trigger: rgba(255,255,255,.53); --nav-emoji: rgba(235,239,237,.42);
           --nav-tag-bg: rgba(15,118,110,.1);
+        }
+        :host([data-palette="gerry"]) {
+          --nav-panel: rgba(245,242,234,.40);
+          --nav-edge: rgba(15,118,110,.32);
+          --nav-card: rgba(255,255,255,.27);
+          --nav-card-edge: rgba(15,118,110,.22);
+          --nav-hover: rgba(226,243,240,.68);
+          --nav-emoji: rgba(226,243,240,.45);
+          --nav-tag-bg: rgba(15,118,110,.14);
         }
         *, *::before, *::after { box-sizing: border-box; }
         button, a { -webkit-tap-highlight-color: transparent; }
@@ -161,7 +174,7 @@
         :is(button,a,input):focus-visible { outline:3px solid var(--nav-accent);outline-offset:3px; }
         .dots { display:grid;grid-template-columns:repeat(3,5px);gap:4px; }
         .dots i { width:5px;height:5px;border-radius:50%;background:currentColor; }
-        .panel { position:absolute;top:56px;right:0;width:min(390px,calc(100vw - 24px));max-height:min(620px,calc(100dvh - 92px));overflow:auto;padding:20px;border:1px solid var(--nav-edge);border-radius:18px;background:var(--nav-panel);box-shadow:var(--nav-shadow);backdrop-filter:blur(18px) saturate(135%);-webkit-backdrop-filter:blur(18px) saturate(135%); }
+        .panel { position:absolute;top:56px;right:0;width:min(390px,calc(100vw - 24px));max-height:min(620px,calc(100dvh - 92px));overflow:auto;padding:20px;border:1px solid var(--nav-edge);border-radius:18px;background:var(--nav-panel);box-shadow:var(--nav-shadow);backdrop-filter:blur(11px) saturate(120%);-webkit-backdrop-filter:blur(11px) saturate(120%); }
         .panel[hidden] { display:none; }
         h2 { margin:0 0 16px;font-size:22px;line-height:1.2;color:var(--nav-text);font-weight:700; }
         .grid { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px; }
