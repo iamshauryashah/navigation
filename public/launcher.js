@@ -54,6 +54,76 @@
     { name: "Soccer Manager", icon: "📋", url: "https://soccermanager.shauryaswebsites.com/" }
   ];
 
+  // BEGIN PLACEMENT CORE (tested independently in tests/placement.test.cjs)
+  function choosePlacement(candidates, obstacles, previous) {
+    let winner = candidates[0], best = Infinity;
+    for (const candidate of candidates) {
+      let score = candidate.preference;
+      for (const obstacle of obstacles) {
+        const overlapWidth = Math.max(0, Math.min(candidate.right, obstacle.right) - Math.max(candidate.left, obstacle.left));
+        const overlapHeight = Math.max(0, Math.min(candidate.bottom, obstacle.bottom) - Math.max(candidate.top, obstacle.top));
+        if (overlapWidth && overlapHeight) {
+          const portion = overlapWidth * overlapHeight / ((candidate.right - candidate.left) * (candidate.bottom - candidate.top));
+          score += obstacle.weight * portion;
+        }
+      }
+      // Avoid jumping between comparably safe positions as scrolling changes the page.
+      if (candidate.id === previous) score -= 5;
+      if (score < best) { best = score; winner = candidate; }
+    }
+    return winner;
+  }
+  // END PLACEMENT CORE
+
+  function positions(width, height) {
+    const mobile = width <= 480;
+    const margin = mobile ? 12 : 24;
+    const button = 46;
+    const xRight = Math.max(margin, width - margin - button);
+    const xLeft = margin;
+    const top = mobile ? 12 : 18;
+    const bottom = Math.max(top, height - margin - button);
+    const middle = Math.max(top, Math.round((height - button) / 2));
+    const rect = (id, x, y, preference, horizontal, vertical) =>
+      ({ id, left:x, top:y, right:x+button, bottom:y+button, preference, horizontal, vertical });
+    return [
+      rect("top-right",xRight,top,0,"right","top"),
+      rect("top-left",xLeft,top,9,"left","top"),
+      rect("mid-right",xRight,middle,15,"right","middle"),
+      rect("mid-left",xLeft,middle,19,"left","middle"),
+      rect("bottom-right",xRight,bottom,24,"right","bottom"),
+      rect("bottom-left",xLeft,bottom,28,"left","bottom")
+    ];
+  }
+
+  function visibleObstacles(host) {
+    const result = [];
+    // Inspect only meaningful foreground content, not full-page layout wrappers.
+    const targets = document.querySelectorAll(
+      'button,a,input,select,textarea,summary,[role="button"],[role="link"],[tabindex],canvas,iframe,video,[contenteditable="true"],h1,h2,h3'
+    );
+    for (const el of Array.from(targets).slice(0,600)) {
+      if (el === host || host.contains(el)) continue;
+      if (el.closest('#shaurya-app-launcher')) continue;
+      const style = getComputedStyle(el);
+      if (style.display === "none" || style.visibility === "hidden" || style.pointerEvents === "none" || Number(style.opacity) === 0) continue;
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height || r.bottom <= 0 || r.right <= 0 || r.top >= innerHeight || r.left >= innerWidth) continue;
+      const canvas = el.matches('canvas,iframe,video');
+      const heading = el.matches('h1,h2,h3');
+      // Leave 10px of breathing room around important targets.
+      result.push({left:r.left-10,top:r.top-10,right:r.right+10,bottom:r.bottom+10,weight:canvas?125:heading?100:160});
+    }
+    // Feedback uses Shadow DOM; its floating button is invisible to ordinary selectors.
+    const feedback = document.getElementById("shaurya-feedback-root");
+    const feedbackButton = feedback?.shadowRoot?.querySelector(".launch");
+    if (feedbackButton) {
+      const r = feedbackButton.getBoundingClientRect();
+      if (r.width && r.height) result.push({left:r.left-12,top:r.top-12,right:r.right+12,bottom:r.bottom+12,weight:230});
+    }
+    return result;
+  }
+
   function mount() {
     if (document.getElementById("shaurya-app-launcher")) return;
     const host = document.createElement("div");
@@ -100,7 +170,7 @@
         .home-tag { display:inline-block;padding:2px 9px;border-radius:999px;background:var(--nav-tag-bg);color:var(--nav-text);font-size:11px;font-weight:650;line-height:1.3; }
         .emoji { display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--nav-emoji);font-size:27px; }
         .name { font-size:12px;font-weight:650;line-height:1.3;overflow-wrap:anywhere; }
-        @media (max-width: 480px) { :host { top:12px;right:12px; } .panel { padding:15px; } .app { min-height:99px; } }
+        @media (max-width: 480px) { .panel { padding:15px; } .app { min-height:99px; } }
         @media (prefers-reduced-motion:reduce) { .app { transition:none; } }
       </style>
       <button type="button" class="trigger" aria-label="Open app launcher" aria-haspopup="true" aria-expanded="false" aria-controls="shaurya-apps">
@@ -139,10 +209,40 @@
       }
       nav.append(a);
     }
+    let chosen = null;
+    let pending = false;
+    const place = () => {
+      if (!panel.hidden) return; // Never move the button while the user is interacting with the menu.
+      const candidates = positions(window.innerWidth, window.innerHeight);
+      const next = choosePlacement(candidates, visibleObstacles(host), chosen);
+      if (next.id === chosen) return;
+      chosen = next.id;
+      const edge = next.horizontal === "right" ? "right" : "left";
+      host.style.top = next.top + "px";
+      host.style.left = next.left + "px";
+      host.style.right = "auto";
+      host.style.bottom = "auto";
+      panel.style.left = edge === "left" ? "0" : "auto";
+      panel.style.right = edge === "right" ? "0" : "auto";
+      // Above the trigger for bottom placements, below it elsewhere.
+      if (next.vertical === "bottom") {
+        panel.style.top = "auto";
+        panel.style.bottom = "56px";
+      } else {
+        panel.style.top = "56px";
+        panel.style.bottom = "auto";
+      }
+    };
+    const schedulePlacement = () => {
+      if (pending || !panel.hidden) return;
+      pending = true;
+      requestAnimationFrame(() => { pending = false; place(); });
+    };
     const setOpen = (open) => {
       panel.hidden = !open;
       trigger.setAttribute("aria-expanded", String(open));
       trigger.setAttribute("aria-label", open ? "Close app launcher" : "Open app launcher");
+      if (!open) schedulePlacement();
     };
     trigger.addEventListener("click", () => setOpen(panel.hidden));
     document.addEventListener("pointerdown", (event) => {
@@ -152,6 +252,11 @@
       if (event.key === "Escape" && !panel.hidden) { setOpen(false); trigger.focus(); }
     });
     document.body.append(host);
+    place();
+    window.addEventListener("resize", schedulePlacement, { passive: true });
+    window.addEventListener("scroll", schedulePlacement, { passive: true, capture: true });
+    // Re-check after the host app finishes loading its layout.
+    window.addEventListener("load", schedulePlacement, { once: true });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount, {once:true});
   else mount();
