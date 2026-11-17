@@ -1,0 +1,21 @@
+name: Navigation placement tests
+on:
+  push:
+    paths:
+      - 'public/launcher.js'
+      - 'tests/**'
+      - '.github/workflows/placement-tests.yml'
+  pull_request:
+    paths:
+      - 'public/launcher.js'
+      - 'tests/**'
+jobs:
+  placement:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check public/launcher.js
+      - run: node --test tests/placement.test.cjs
