@@ -9,12 +9,12 @@
   const siteThemes = {
     "www.shauryaswebsites.com": ["dark", "#c4b5fd"],
     "shauryaswebsites.com": ["dark", "#c4b5fd"],
-    "gerry.shauryaswebsite.com": ["light", "#0f766e"],
-    "midterm-uj.shauryaswebsite.com": ["light", "#798969"],
+    "gerry.shauryaswebsites.com": ["light", "#0f766e"],
+    "midterm-uj.shauryaswebsites.com": ["light", "#798969"],
     "presidentialsim.shauryaswebsites.com": ["light", "#15786e"],
     "soccersim.shauryaswebsites.com": ["dark", "#cdf879"],
     "soccermanager.shauryaswebsites.com": ["light", "#205a43"],
-    "army.shauryaswebsite.com": ["light", "#4a5568"],
+    "army.shauryaswebsites.com": ["light", "#4a5568"],
     "qed.shauryaswebsites.com": ["light", "#285b42"],
     "feedback.shauryaswebsites.com": ["light", "#8b6ee1"],
     "secret.shauryaswebsites.com": ["light", "#5879b5"]
@@ -43,14 +43,14 @@
   // Shared catalog: edit only here to update every participating website.
   const apps = [
     { name: "Shaurya's Websites", icon: "✨", url: "https://www.shauryaswebsites.com/" },
-    { name: "Midterm-UJ", icon: "🎓", url: "https://midterm-uj.shauryaswebsite.com/" },
-    { name: "Gerry the Salamander", icon: "🦎", url: "https://gerry.shauryaswebsite.com/" },
-    { name: "Race to Whitehouse", icon: "🏁", url: "https://race.shauryaswebsite.com/" },
-    { name: "About Me", icon: "👋", url: "https://hello.shauryaswebsite.com/" },
+    { name: "Midterm-UJ", icon: "🎓", url: "https://midterm-uj.shauryaswebsites.com/" },
+    { name: "Gerry the Salamander", icon: "🦎", url: "https://gerry.shauryaswebsites.com/" },
+    { name: "Race to Whitehouse", icon: "🏁", url: "https://race.shauryaswebsites.com/" },
+    { name: "About Me", icon: "👋", url: "https://hello.shauryaswebsites.com/" },
     { name: "QED Project", icon: "🧩", url: "https://qed.shauryaswebsites.com/" },
     { name: "Road to 270", icon: "🗳️", url: "https://presidentialsim.shauryaswebsites.com/" },
     { name: "Soccer Sim", icon: "⚽", url: "https://soccersim.shauryaswebsites.com/" },
-    { name: "Army Game", icon: "🛡️", url: "https://army.shauryaswebsite.com/" },
+    { name: "Army Game", icon: "🛡️", url: "https://army.shauryaswebsites.com/" },
     { name: "Soccer Manager", icon: "📋", url: "https://soccermanager.shauryaswebsites.com/" }
   ];
 
@@ -132,7 +132,7 @@
     host.dataset.theme = mode;
     host.style.setProperty("--nav-accent", accent);
     // Custom tinted glass remains centralized; only palette tokens vary by host.
-    if (location.hostname === "gerry.shauryaswebsite.com") {
+    if (location.hostname === "gerry.shauryaswebsites.com") {
       host.dataset.palette = "gerry";
     }
     const shadow = host.attachShadow({mode: "open"});
