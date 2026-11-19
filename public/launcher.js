@@ -42,16 +42,17 @@
 
   // Shared catalog: edit only here to update every participating website.
   const apps = [
-    { name: "Shaurya's Websites", icon: "✨", url: "https://www.shauryaswebsites.com/" },
-    { name: "Midterm-UJ", icon: "🎓", url: "https://midterm-uj.shauryaswebsites.com/" },
-    { name: "Gerry the Salamander", icon: "🦎", url: "https://gerry.shauryaswebsites.com/" },
-    { name: "Race to Whitehouse", icon: "🏁", url: "https://race.shauryaswebsites.com/" },
-    { name: "About Me", icon: "👋", url: "https://hello.shauryaswebsites.com/" },
-    { name: "QED Project", icon: "🧩", url: "https://qed.shauryaswebsites.com/" },
-    { name: "Road to 270", icon: "🗳️", url: "https://presidentialsim.shauryaswebsites.com/" },
-    { name: "Soccer Sim", icon: "⚽", url: "https://soccersim.shauryaswebsites.com/" },
-    { name: "Army Game", icon: "🛡️", url: "https://army.shauryaswebsites.com/" },
-    { name: "Soccer Manager", icon: "📋", url: "https://soccermanager.shauryaswebsites.com/" }
+    { key: "landing", name: "Shaurya's Websites", icon: "✨", url: "https://www.shauryaswebsites.com/" },
+    { key: "midterm", name: "Midterm-UJ", icon: "🎓", url: "https://midterm-uj.shauryaswebsites.com/" },
+    { key: "gerry", name: "Gerry the Salamander", icon: "🦎", url: "https://gerry.shauryaswebsites.com/" },
+    { key: "race", name: "Race to Whitehouse", icon: "🏁", url: "https://race.shauryaswebsites.com/" },
+    { key: "about", name: "About Me", icon: "👋", url: "https://hello.shauryaswebsites.com/" },
+    { key: "qed", name: "QED Project", icon: "🧩", url: "https://qed.shauryaswebsites.com/" },
+    { key: "road-to-270", name: "Road to 270", icon: "🗳️", url: "https://presidentialsim.shauryaswebsites.com/" },
+    { key: "soccer-sim", name: "Soccer Sim", icon: "⚽", url: "https://soccersim.shauryaswebsites.com/" },
+    { key: "army", name: "Army Game", icon: "🛡️", url: "https://army.shauryaswebsites.com/" },
+    { key: "touchline", name: "Soccer Manager", icon: "📋", url: "https://soccermanager.shauryaswebsites.com/" },
+    { key: "admin", name: "Admin Dashboard", icon: "🎛️", url: "https://auth.shauryaswebsites.com/admin" }
   ];
 
   // BEGIN PLACEMENT CORE (tested independently in tests/placement.test.cjs)
@@ -175,7 +176,7 @@
         .dots { display:grid;grid-template-columns:repeat(3,5px);gap:4px; }
         .dots i { width:5px;height:5px;border-radius:50%;background:currentColor; }
         .panel { position:absolute;top:56px;right:0;width:min(390px,calc(100vw - 24px));max-height:min(620px,calc(100dvh - 92px));overflow:auto;padding:20px;border:1px solid var(--nav-edge);border-radius:18px;background:var(--nav-panel);box-shadow:var(--nav-shadow);backdrop-filter:blur(11px) saturate(120%);-webkit-backdrop-filter:blur(11px) saturate(120%); }
-        .panel[hidden] { display:none; }
+        .panel[hidden], .app[hidden] { display:none; }
         h2 { margin:0 0 16px;font-size:22px;line-height:1.2;color:var(--nav-text);font-weight:700; }
         .grid { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px; }
         .app { min-width:0;min-height:112px;padding:13px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-align:center;text-decoration:none;border:1px solid var(--nav-card-edge);border-radius:13px;background:var(--nav-card);color:var(--nav-text);transition:background .15s,border-color .15s; }
@@ -196,12 +197,15 @@
     const trigger = shadow.querySelector(".trigger");
     const panel = shadow.querySelector(".panel");
     const nav = shadow.querySelector(".grid");
+    const appLinks = new Map();
     for (const app of apps) {
       const a = document.createElement("a");
       a.className = "app";
       a.href = app.url;
       a.target = "_blank";
       a.rel = "noopener noreferrer";
+      a.hidden = app.key !== "landing"; // Never flash restricted destinations before access is checked.
+      appLinks.set(app.key, a);
       if (new URL(app.url).hostname === location.hostname) {
         a.classList.add("current");
         a.setAttribute("aria-current", "page");
@@ -222,6 +226,35 @@
       }
       nav.append(a);
     }
+
+    // The authentication service owns every site's access rules. Do not infer permissions
+    // from user flags or duplicate the admin's role-to-page policy in this widget.
+    let accessGeneration = 0;
+    async function refreshAccess() {
+      const generation = ++accessGeneration;
+      for (const [key, link] of appLinks) if (key !== "landing") link.hidden = true;
+      const checks = apps.filter(app => app.key !== "landing").map(async app => {
+        try {
+          const response = await fetch("https://auth.shauryaswebsites.com/api/page-access/" + encodeURIComponent(app.key), {
+            credentials: "include", cache: "no-store"
+          });
+          if (!response.ok) return false;
+          const access = await response.json();
+          return access.page === app.key && access.allowed === true;
+        } catch {
+          return false; // Fail closed if the permissions service is unavailable.
+        }
+      });
+      const allowed = await Promise.all(checks);
+      if (generation !== accessGeneration) return; // Ignore stale responses after a login/logout.
+      let index = 0;
+      for (const app of apps) {
+        if (app.key !== "landing") appLinks.get(app.key).hidden = !allowed[index++];
+      }
+    }
+    window.addEventListener("shaurya:auth-changed", refreshAccess);
+    void refreshAccess();
+
     let chosen = null;
     let lastPosition = null;
     let pending = false;
