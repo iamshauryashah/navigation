@@ -51,3 +51,11 @@ The shared launcher automatically scores six screen-edge positions, preferring t
 Positioning is a heuristic, not a guarantee that no site-specific UI can overlap. Complex canvas-only layouts and dynamically injected controls may require review. Future host applications can supply more explicit exclusion regions when warranted.
 
 Run `node --check public/launcher.js && node --test tests/placement.test.cjs` to validate syntax and collision-scoring behavior; GitHub Actions also includes this check. The feedback widget's own position has **not** been changed.
+
+## Platform design principle
+
+> **Shared widgets should inherit their host application's visual identity, not impose their own.**
+
+Navigation applies this principle by reading the shared Login/Account widget's **effective** accent, glass background, borders, and text colors through its existing Shadow DOM. This applies to **both dark and light sites**: the smile-and-app-tiles icon retains its geometry but takes its colors from Login instead of imposing a neon palette. Login loads independently and requires no changes. When it is absent or not yet loaded, Navigation uses its existing host-specific theme fallback; once Login appears, Navigation synchronizes automatically.
+
+Navigation's app permissions and smart positioning are independent of this visual adaptation.
