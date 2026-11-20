@@ -184,7 +184,8 @@
         .smiley-app-icon .sw-tile { fill:var(--nav-accent);fill-opacity:.22; }
         .smiley-app-icon .sw-tile-alt { fill-opacity:.36; }
         .smiley-app-icon .sw-face { stroke:var(--nav-login-text,var(--nav-text)); }
-        .smiley-app-icon .sw-sparkle { fill:var(--nav-accent); }
+        /* The homepage uses the golden ✨ sparkle; keep this emblem golden on every theme. */
+        .smiley-app-icon .sw-sparkle { fill:url(#sw-star); }
         .smiley-app-icon .sw-sparkle-glow { opacity:.32; }
         .panel { position:absolute;top:56px;right:0;width:min(390px,calc(100vw - 24px));max-height:min(620px,calc(100dvh - 92px));overflow:auto;padding:20px;border:1px solid var(--nav-edge);border-radius:18px;background:var(--nav-panel);box-shadow:var(--nav-shadow);backdrop-filter:blur(11px) saturate(120%);-webkit-backdrop-filter:blur(11px) saturate(120%); }
         .panel[hidden], .app[hidden] { display:none; }
