@@ -173,8 +173,10 @@
         .trigger { display:grid;place-items:center;width:46px;height:46px;padding:0;border:1px solid var(--nav-edge);border-radius:14px;background:var(--nav-trigger);color:var(--nav-accent);cursor:pointer;box-shadow:0 6px 22px #0003;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px); }
         .trigger:hover,.trigger[aria-expanded="true"] { background:var(--nav-hover);border-color:var(--nav-accent); }
         :is(button,a,input):focus-visible { outline:3px solid var(--nav-accent);outline-offset:3px; }
-        .dots { display:grid;grid-template-columns:repeat(3,5px);gap:4px; }
-        .dots i { width:5px;height:5px;border-radius:50%;background:currentColor; }
+        /* A self-contained, resolution-independent rendition of the approved neon glass smiley. */
+        .trigger .smiley-app-icon { display:block;width:46px;height:46px;overflow:visible;border-radius:14px; }
+        .trigger { border:0; background:transparent; box-shadow:none; backdrop-filter:none; -webkit-backdrop-filter:none; }
+        .trigger:hover,.trigger[aria-expanded="true"] { background:transparent;border-color:transparent;filter:brightness(1.12); }
         .panel { position:absolute;top:56px;right:0;width:min(390px,calc(100vw - 24px));max-height:min(620px,calc(100dvh - 92px));overflow:auto;padding:20px;border:1px solid var(--nav-edge);border-radius:18px;background:var(--nav-panel);box-shadow:var(--nav-shadow);backdrop-filter:blur(11px) saturate(120%);-webkit-backdrop-filter:blur(11px) saturate(120%); }
         .panel[hidden], .app[hidden] { display:none; }
         h2 { margin:0 0 16px;font-size:22px;line-height:1.2;color:var(--nav-text);font-weight:700; }
@@ -188,7 +190,49 @@
         @media (prefers-reduced-motion:reduce) { .app { transition:none; } }
       </style>
       <button type="button" class="trigger" aria-label="Open app launcher" aria-haspopup="true" aria-expanded="false" aria-controls="shaurya-apps">
-        <span class="dots" aria-hidden="true">${"<i></i>".repeat(9)}</span>
+        <svg class="smiley-app-icon" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="sw-rim" x1="0" y1="0" x2="1" y2="1">
+              <stop stop-color="#54ffff"/><stop offset=".25" stop-color="#00d8db"/><stop offset=".55" stop-color="#4686ff"/><stop offset=".82" stop-color="#9d48ff"/><stop offset="1" stop-color="#f34deb"/>
+            </linearGradient>
+            <linearGradient id="sw-glass" x1=".05" y1=".08" x2=".94" y2=".93">
+              <stop stop-color="#067b92"/><stop offset=".25" stop-color="#043c65"/><stop offset=".58" stop-color="#0a1e63"/><stop offset=".82" stop-color="#202075"/><stop offset="1" stop-color="#681ca8"/>
+            </linearGradient>
+            <linearGradient id="sw-blue" x1=".1" y1=".1" x2=".9" y2=".95">
+              <stop stop-color="#10e7f6"/><stop offset=".43" stop-color="#008be9"/><stop offset="1" stop-color="#09348e"/>
+            </linearGradient>
+            <linearGradient id="sw-pink" x1=".05" y1="0" x2=".95" y2="1">
+              <stop stop-color="#9266ff"/><stop offset=".5" stop-color="#5729a3"/><stop offset="1" stop-color="#8624b8"/>
+            </linearGradient>
+            <linearGradient id="sw-teal" x1="0" y1="1" x2=".95" y2="0">
+              <stop stop-color="#00f2d6"/><stop offset=".48" stop-color="#00b9c9"/><stop offset="1" stop-color="#07507c"/>
+            </linearGradient>
+            <linearGradient id="sw-purple" x1="0" y1="0" x2="1" y2="1">
+              <stop stop-color="#182a97"/><stop offset=".55" stop-color="#5120c6"/><stop offset="1" stop-color="#b23bec"/>
+            </linearGradient>
+            <radialGradient id="sw-star" cx=".45" cy=".3" r=".75">
+              <stop stop-color="#fff9bc"/><stop offset=".43" stop-color="#ffe34e"/><stop offset=".85" stop-color="#ffc619"/><stop offset="1" stop-color="#ff9d13"/>
+            </radialGradient>
+            <filter id="sw-glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="3.3"/>
+            </filter>
+            <filter id="sw-star-glow" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur stdDeviation="2.3"/>
+            </filter>
+          </defs>
+          <rect x="7" y="7" width="114" height="114" rx="34" fill="#0036a4" opacity=".45"/>
+          <rect x="8" y="8" width="112" height="112" rx="34" fill="none" stroke="url(#sw-rim)" stroke-width="6" opacity=".8" filter="url(#sw-glow)"/>
+          <rect x="9" y="9" width="110" height="110" rx="33" fill="url(#sw-glass)" stroke="url(#sw-rim)" stroke-width="3.5"/>
+          <rect x="12" y="12" width="104" height="104" rx="30" fill="none" stroke="#b3e9ff" stroke-opacity=".26" stroke-width="1.4"/>
+          <rect x="24" y="25" width="39" height="38" rx="11.5" fill="url(#sw-blue)"/>
+          <rect x="65" y="25" width="39" height="38" rx="11.5" fill="url(#sw-pink)"/>
+          <rect x="24" y="65" width="39" height="38" rx="11.5" fill="url(#sw-teal)"/>
+          <rect x="65" y="65" width="39" height="38" rx="11.5" fill="url(#sw-purple)"/>
+          <path d="M35.5 50.5 Q43.5 39.2 53 50.5" fill="none" stroke="#fff" stroke-width="5.7" stroke-linecap="round"/>
+          <path d="M49 76.6 Q64 94.8 79.3 76.6" fill="none" stroke="#fff" stroke-width="6.1" stroke-linecap="round"/>
+          <path d="M84.6 34 Q89 45 99.4 48.7 Q89 52.1 84.6 63 Q80.9 52.1 70.4 48.7 Q80.9 45 84.6 34 Z" fill="#ffdb44" filter="url(#sw-star-glow)"/>
+          <path d="M84.6 34 Q89 45 99.4 48.7 Q89 52.1 84.6 63 Q80.9 52.1 70.4 48.7 Q80.9 45 84.6 34 Z" fill="url(#sw-star)"/>
+        </svg>
       </button>
       <section class="panel" id="shaurya-apps" aria-label="Apps" hidden>
         <h2>Apps</h2>
