@@ -173,10 +173,19 @@
         .trigger { display:grid;place-items:center;width:46px;height:46px;padding:0;border:1px solid var(--nav-edge);border-radius:14px;background:var(--nav-trigger);color:var(--nav-accent);cursor:pointer;box-shadow:0 6px 22px #0003;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px); }
         .trigger:hover,.trigger[aria-expanded="true"] { background:var(--nav-hover);border-color:var(--nav-accent); }
         :is(button,a,input):focus-visible { outline:3px solid var(--nav-accent);outline-offset:3px; }
-        /* A self-contained, resolution-independent rendition of the approved neon glass smiley. */
-        .trigger .smiley-app-icon { display:block;width:46px;height:46px;overflow:visible;border-radius:14px; }
-        .trigger { border:0; background:transparent; box-shadow:none; backdrop-filter:none; -webkit-backdrop-filter:none; }
-        .trigger:hover,.trigger[aria-expanded="true"] { background:transparent;border-color:transparent;filter:brightness(1.12); }
+        /* Shared widgets inherit the host site's appearance. The icon's face and
+           four-tile silhouette stay constant; Login supplies its exact colors. */
+        .trigger .smiley-app-icon { display:block;width:44px;height:44px;overflow:visible;border-radius:12px; }
+        .trigger { border-color:var(--nav-login-edge,var(--nav-edge));background:var(--nav-login-trigger,var(--nav-trigger));box-shadow:0 6px 22px #0003; }
+        .trigger:hover,.trigger[aria-expanded="true"] { background:var(--nav-login-hover,var(--nav-hover));border-color:var(--nav-accent); }
+        .smiley-app-icon .sw-neon { display:none; }
+        .smiley-app-icon .sw-glass { fill:var(--nav-login-trigger,var(--nav-trigger));stroke:var(--nav-login-edge,var(--nav-edge));stroke-width:2; }
+        .smiley-app-icon .sw-glass-highlight { stroke:var(--nav-accent);stroke-opacity:.2; }
+        .smiley-app-icon .sw-tile { fill:var(--nav-accent);fill-opacity:.22; }
+        .smiley-app-icon .sw-tile-alt { fill-opacity:.36; }
+        .smiley-app-icon .sw-face { stroke:var(--nav-login-text,var(--nav-text)); }
+        .smiley-app-icon .sw-sparkle { fill:var(--nav-accent); }
+        .smiley-app-icon .sw-sparkle-glow { opacity:.32; }
         .panel { position:absolute;top:56px;right:0;width:min(390px,calc(100vw - 24px));max-height:min(620px,calc(100dvh - 92px));overflow:auto;padding:20px;border:1px solid var(--nav-edge);border-radius:18px;background:var(--nav-panel);box-shadow:var(--nav-shadow);backdrop-filter:blur(11px) saturate(120%);-webkit-backdrop-filter:blur(11px) saturate(120%); }
         .panel[hidden], .app[hidden] { display:none; }
         h2 { margin:0 0 16px;font-size:22px;line-height:1.2;color:var(--nav-text);font-weight:700; }
@@ -220,24 +229,76 @@
               <feGaussianBlur stdDeviation="2.3"/>
             </filter>
           </defs>
-          <rect x="7" y="7" width="114" height="114" rx="34" fill="#0036a4" opacity=".45"/>
-          <rect x="8" y="8" width="112" height="112" rx="34" fill="none" stroke="url(#sw-rim)" stroke-width="6" opacity=".8" filter="url(#sw-glow)"/>
-          <rect x="9" y="9" width="110" height="110" rx="33" fill="url(#sw-glass)" stroke="url(#sw-rim)" stroke-width="3.5"/>
-          <rect x="12" y="12" width="104" height="104" rx="30" fill="none" stroke="#b3e9ff" stroke-opacity=".26" stroke-width="1.4"/>
-          <rect x="24" y="25" width="39" height="38" rx="11.5" fill="url(#sw-blue)"/>
-          <rect x="65" y="25" width="39" height="38" rx="11.5" fill="url(#sw-pink)"/>
-          <rect x="24" y="65" width="39" height="38" rx="11.5" fill="url(#sw-teal)"/>
-          <rect x="65" y="65" width="39" height="38" rx="11.5" fill="url(#sw-purple)"/>
-          <path d="M35.5 50.5 Q43.5 39.2 53 50.5" fill="none" stroke="#fff" stroke-width="5.7" stroke-linecap="round"/>
-          <path d="M49 76.6 Q64 94.8 79.3 76.6" fill="none" stroke="#fff" stroke-width="6.1" stroke-linecap="round"/>
-          <path d="M84.6 34 Q89 45 99.4 48.7 Q89 52.1 84.6 63 Q80.9 52.1 70.4 48.7 Q80.9 45 84.6 34 Z" fill="#ffdb44" filter="url(#sw-star-glow)"/>
-          <path d="M84.6 34 Q89 45 99.4 48.7 Q89 52.1 84.6 63 Q80.9 52.1 70.4 48.7 Q80.9 45 84.6 34 Z" fill="url(#sw-star)"/>
+          <rect class="sw-neon" x="7" y="7" width="114" height="114" rx="34" fill="#0036a4" opacity=".45"/>
+          <rect class="sw-neon" x="8" y="8" width="112" height="112" rx="34" fill="none" stroke="url(#sw-rim)" stroke-width="6" opacity=".8" filter="url(#sw-glow)"/>
+          <rect class="sw-glass" x="9" y="9" width="110" height="110" rx="33" fill="url(#sw-glass)" stroke="url(#sw-rim)" stroke-width="3.5"/>
+          <rect class="sw-glass-highlight" x="12" y="12" width="104" height="104" rx="30" fill="none" stroke="#b3e9ff" stroke-opacity=".26" stroke-width="1.4"/>
+          <rect class="sw-tile" x="24" y="25" width="39" height="38" rx="11.5" fill="url(#sw-blue)"/>
+          <rect class="sw-tile sw-tile-alt" x="65" y="25" width="39" height="38" rx="11.5" fill="url(#sw-pink)"/>
+          <rect class="sw-tile sw-tile-alt" x="24" y="65" width="39" height="38" rx="11.5" fill="url(#sw-teal)"/>
+          <rect class="sw-tile" x="65" y="65" width="39" height="38" rx="11.5" fill="url(#sw-purple)"/>
+          <path class="sw-face" d="M35.5 50.5 Q43.5 39.2 53 50.5" fill="none" stroke="#fff" stroke-width="5.7" stroke-linecap="round"/>
+          <path class="sw-face" d="M49 76.6 Q64 94.8 79.3 76.6" fill="none" stroke="#fff" stroke-width="6.1" stroke-linecap="round"/>
+          <path d="M84.6 34 Q89 45 99.4 48.7 Q89 52.1 84.6 63 Q80.9 52.1 70.4 48.7 Q80.9 45 84.6 34 Z" class="sw-sparkle sw-sparkle-glow" fill="#ffdb44" filter="url(#sw-star-glow)"/>
+          <path d="M84.6 34 Q89 45 99.4 48.7 Q89 52.1 84.6 63 Q80.9 52.1 70.4 48.7 Q80.9 45 84.6 34 Z" class="sw-sparkle" fill="url(#sw-star)"/>
         </svg>
       </button>
       <section class="panel" id="shaurya-apps" aria-label="Apps" hidden>
         <h2>Apps</h2>
         <nav class="grid" aria-label="Shaurya's Websites apps"></nav>
       </section>`;
+    // Read the Login widget's effective palette without changing Login or the host app.
+    // A late-loading Login widget is discovered through the document observer.
+    let loginObserver = null;
+    let paletteSignature = "";
+    const syncLoginPalette = () => {
+      const login = document.getElementById("shaurya-account-widget");
+      const button = login?.shadowRoot?.querySelector(".trigger");
+      const panel = login?.shadowRoot?.querySelector(".panel");
+      if (!login || !button || !panel) return false;
+      const loginStyle = getComputedStyle(login);
+      const buttonStyle = getComputedStyle(button);
+      const panelStyle = getComputedStyle(panel);
+      const theme = login.dataset.theme;
+      const palette = {
+        "--nav-accent": loginStyle.getPropertyValue("--accent").trim() || buttonStyle.color,
+        "--nav-login-trigger": buttonStyle.backgroundColor,
+        "--nav-login-edge": buttonStyle.borderTopColor,
+        "--nav-login-hover": loginStyle.getPropertyValue("--hover").trim(),
+        "--nav-login-text": loginStyle.getPropertyValue("--text").trim(),
+        "--nav-panel": panelStyle.backgroundColor,
+        "--nav-edge": loginStyle.getPropertyValue("--edge").trim(),
+        "--nav-hover": loginStyle.getPropertyValue("--hover").trim(),
+        "--nav-text": loginStyle.getPropertyValue("--text").trim(),
+        "--nav-card": loginStyle.getPropertyValue("--field").trim()
+      };
+      const signature = JSON.stringify([theme,palette]);
+      if (signature !== paletteSignature) {
+        paletteSignature = signature;
+        if (theme === "dark" || theme === "light") host.dataset.theme = theme;
+        for (const [name,value] of Object.entries(palette)) if (value) host.style.setProperty(name,value);
+      }
+      return true;
+    };
+    const attachLoginObserver = () => {
+      const login = document.getElementById("shaurya-account-widget");
+      if (!login?.shadowRoot?.querySelector(".trigger")) return false;
+      syncLoginPalette();
+      if (!loginObserver) {
+        loginObserver = new MutationObserver(syncLoginPalette);
+        loginObserver.observe(login,{attributes:true,attributeFilter:["style","data-theme","data-palette","class"]});
+      }
+      return true;
+    };
+    if (!attachLoginObserver()) {
+      const startupObserver = new MutationObserver(() => {
+        if (attachLoginObserver()) startupObserver.disconnect();
+      });
+      startupObserver.observe(document.body,{childList:true});
+      window.addEventListener("load", () => attachLoginObserver(),{once:true});
+    }
+    window.addEventListener("shaurya:auth-changed", syncLoginPalette);
+    window.addEventListener("pageshow", syncLoginPalette);
     const trigger = shadow.querySelector(".trigger");
     const panel = shadow.querySelector(".panel");
     const nav = shadow.querySelector(".grid");
