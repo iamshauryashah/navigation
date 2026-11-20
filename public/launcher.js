@@ -179,8 +179,8 @@
         .trigger { border-color:var(--nav-login-edge,var(--nav-edge));background:var(--nav-login-trigger,var(--nav-trigger));box-shadow:0 6px 22px #0003; }
         .trigger:hover,.trigger[aria-expanded="true"] { background:var(--nav-login-hover,var(--nav-hover));border-color:var(--nav-accent); }
         .smiley-app-icon .sw-neon { display:none; }
-        .smiley-app-icon .sw-glass { fill:var(--nav-login-trigger,var(--nav-trigger));stroke:var(--nav-login-edge,var(--nav-edge));stroke-width:2; }
-        .smiley-app-icon .sw-glass-highlight { stroke:var(--nav-accent);stroke-opacity:.2; }
+        /* The enclosing Login-matched button provides the only outline. */
+        .smiley-app-icon .sw-glass { fill:var(--nav-login-trigger,var(--nav-trigger));stroke:none; }
         .smiley-app-icon .sw-tile { fill:var(--nav-accent);fill-opacity:.22; }
         .smiley-app-icon .sw-tile-alt { fill-opacity:.36; }
         .smiley-app-icon .sw-face { stroke:var(--nav-login-text,var(--nav-text)); }
@@ -232,7 +232,6 @@
           <rect class="sw-neon" x="7" y="7" width="114" height="114" rx="34" fill="#0036a4" opacity=".45"/>
           <rect class="sw-neon" x="8" y="8" width="112" height="112" rx="34" fill="none" stroke="url(#sw-rim)" stroke-width="6" opacity=".8" filter="url(#sw-glow)"/>
           <rect class="sw-glass" x="9" y="9" width="110" height="110" rx="33" fill="url(#sw-glass)" stroke="url(#sw-rim)" stroke-width="3.5"/>
-          <rect class="sw-glass-highlight" x="12" y="12" width="104" height="104" rx="30" fill="none" stroke="#b3e9ff" stroke-opacity=".26" stroke-width="1.4"/>
           <rect class="sw-tile" x="24" y="25" width="39" height="38" rx="11.5" fill="url(#sw-blue)"/>
           <rect class="sw-tile sw-tile-alt" x="65" y="25" width="39" height="38" rx="11.5" fill="url(#sw-pink)"/>
           <rect class="sw-tile sw-tile-alt" x="24" y="65" width="39" height="38" rx="11.5" fill="url(#sw-teal)"/>
